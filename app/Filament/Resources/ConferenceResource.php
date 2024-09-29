@@ -24,14 +24,29 @@ class ConferenceResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Conference Name')
+                    ->default('My Conference')
+                    ->helperText('The name of the conference.')
+                    ->required()
+                    ->maxLength(60),
+                Forms\Components\RichEditor::make('description')
+                    ->disableToolbarButtons(['italic'])
                     ->required(),
-                Forms\Components\TextInput::make('description')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('start_date')
+                Forms\Components\DatePicker::make('start_date')
+                    ->displayFormat('d.m.Y')
+                    ->native(false)
                     ->required(),
                 Forms\Components\DateTimePicker::make('end_date')
+                    ->native(false)
                     ->required(),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Toggle::make('is_published')
+                    ->default(true),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                        'archived' => 'Archived'
+                    ])
                     ->required(),
                 Forms\Components\TextInput::make('region')
                     ->required(),
@@ -74,7 +89,7 @@ class ConferenceResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->slideOver(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
