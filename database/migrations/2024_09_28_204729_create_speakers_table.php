@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,10 +13,11 @@ return new class extends Migration
         Schema::create('speakers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('avatar')->nullable();
             $table->string('email');
-            $table->json('qualifications');
-            $table->text('bio');
-            $table->string('twitter_handle');
+            $table->json('qualifications')->nullable();
+            $table->text('bio')->nullable();
+            $table->string('twitter_handle')->nullable();
             $table->timestamps();
         });
     }
