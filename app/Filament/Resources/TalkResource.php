@@ -40,6 +40,13 @@ class TalkResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->persistFiltersInSession() // when page changed filters not removing
+            ->filtersTriggerAction(function ($action) {
+                return $action->button()->label('Filters');
+            })
+            ->toggleColumnsTriggerAction(function ($action) {
+                return $action->button()->label('Columns');
+            })
             ->columns([
                 /*Tables\Columns\TextInputColumn::make('title')
                     ->sortable()
@@ -98,7 +105,20 @@ class TalkResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('new_talk'),
+                Tables\Filters\SelectFilter::make('speaker')
+                    ->searchable()
+                    ->multiple()
+                    ->preload()
+                    ->relationship('speaker', 'name'),
+                Tables\Filters\Filter::make('has_avatar')
+                    ->label('Show Only Speakers with Avatar')
+                    ->toggle()
+                    ->query(function (Builder $query) {
+                        return $query->whereHas('speaker', function (Builder $query) {
+                            $query->whereNotNull('avatar');
+                        });
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
