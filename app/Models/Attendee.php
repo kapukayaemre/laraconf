@@ -29,4 +29,10 @@ class Attendee extends Model
 
         ];
     }
+
+    public function conference(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Conference::class);
+    }
+
 }
