@@ -7,6 +7,7 @@ use App\Filament\Resources\AttendeeResource\RelationManagers;
 use App\Filament\Resources\AttendeeResource\Widgets\AttendeeChartWidget;
 use App\Filament\Resources\AttendeeResource\Widgets\AttendeesStatsWidget;
 use App\Models\Attendee;
+use Awcodes\Shout\Components\Shout;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -50,12 +51,24 @@ class AttendeeResource extends Resource
     {
         return $form
             ->schema([
+                Shout::make('warn-price')
+                    ->visible(function (Forms\Get $get) {
+                        return $get('ticket_cost') > 500;
+                    })
+                    ->columnSpanFull()
+                    ->type('warning')
+                    ->content(function (Forms\Get $get) {
+                        $price = $get('ticket_cost');
+
+                        return 'This is ' . $price - 500 . '$ more than the average ticket price';
+                    }),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('email')
                     ->email()
                     ->required(),
                 TextInput::make('ticket_cost')
+                    ->lazy()
                     ->required()
                     ->numeric(),
                 Toggle::make('is_paid')
@@ -122,9 +135,9 @@ class AttendeeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAttendees::route('/'),
+            'index'  => Pages\ListAttendees::route('/'),
             'create' => Pages\CreateAttendee::route('/create'),
-            'edit' => Pages\EditAttendee::route('/{record}/edit'),
+            'edit'   => Pages\EditAttendee::route('/{record}/edit'),
         ];
     }
 }
